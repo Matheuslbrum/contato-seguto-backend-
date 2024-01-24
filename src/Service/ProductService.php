@@ -17,8 +17,8 @@ class ProductService
         $query = "
             SELECT p.*, c.title as category
             FROM product p
-            INNER JOIN product_category pc ON pc.product_id = p.id
-            INNER JOIN category c ON c.id = pc.id
+            INNER JOIN product_category pc ON p.id = pc.product_id
+            INNER JOIN category c ON c.id = pc.cat_id
             WHERE p.company_id = {$adminUserId}
         ";
 
@@ -131,7 +131,7 @@ class ProductService
         ");
         if (!$stm->execute())
             return false;
-        
+
         $stm = $this->pdo->prepare("DELETE FROM product WHERE id = {$id}");
         if (!$stm->execute())
             return false;
