@@ -9,8 +9,8 @@ use Psr\Http\Message\ServerRequestInterface;
 class CompanyController
 {
     private \PDO $pdo;
-    public function __construct(
-    ) {
+    public function __construct()
+    {
         $this->pdo = DB::connect();
     }
 
