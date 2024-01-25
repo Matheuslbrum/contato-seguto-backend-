@@ -2,6 +2,8 @@
 
 namespace Contatoseguro\TesteBackend\Controller;
 
+require_once dirname(__DIR__, 1) . '../utils/MapFunctions.php';
+
 use Contatoseguro\TesteBackend\Service\CompanyService;
 use Contatoseguro\TesteBackend\Service\ProductService;
 use Psr\Http\Message\ResponseInterface;
@@ -43,20 +45,22 @@ class ReportController
             $stm = $this->productService->getLog($product->id);
             $productLogs = $stm->fetchAll();
 
+            $productLogsValue = implode('', array_map('getObjectValues', $productLogs));
+
             $data[$i + 1][] = $product->id;
             $data[$i + 1][] = $companyName;
             $data[$i + 1][] = $product->title;
             $data[$i + 1][] = $product->price;
             $data[$i + 1][] = $product->category;
             $data[$i + 1][] = $product->created_at;
-            $data[$i + 1][] = $productLogs;
+            $data[$i + 1][] = $productLogsValue;
         }
 
-        $report = "<table style='font-size: 10px;'>";
+        $report = "<table style='font-size: 10px; border-collapse: collapse;'>";
         foreach ($data as $row) {
             $report .= "<tr>";
             foreach ($row as $column) {
-                $report .= "<td>{$column}</td>";
+                $report .= "<td style='border: 1px solid #ddd;'>{$column}</td>";
             }
             $report .= "</tr>";
         }
