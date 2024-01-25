@@ -29,7 +29,7 @@ class ProductService
         return $stm;
     }
 
-    public function getAllByFiltering($adminUserId, $status)
+    public function getAllByStatusFiltering($adminUserId, $status)
     {
         $query = "
             SELECT p.*, c.title as category

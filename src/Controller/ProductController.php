@@ -28,12 +28,12 @@ class ProductController
         return $response->withStatus(200);
     }
 
-    public function getAllByFiltering(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function getAllByStatusFiltering(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $adminUserId = $request->getHeader('admin_user_id')[0];
         $status = $request->getQueryParams()['status'] ?? null;
 
-        $stm = $this->service->getAllByFiltering($adminUserId, $status);
+        $stm = $this->service->getAllByStatusFiltering($adminUserId, $status);
         $response->getBody()->write(json_encode($stm->fetchAll()));
         return $response->withStatus(200);
     }
