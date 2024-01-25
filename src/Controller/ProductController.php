@@ -48,6 +48,21 @@ class ProductController
         return $response->withStatus(200);
     }
 
+    public function getAllByOrder(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        $adminUserId = $request->getHeader('admin_user_id')[0];
+        $order = $request->getQueryParams()['order'] ?? 'asc';
+        $order = in_array(strtolower($order), ['asc', 'desc']) ? strtolower($order) : 'asc';
+
+        $stm = $this->service->getAllByOrder($adminUserId, $order)->fetchAll();
+
+        $newStm = array($stm);
+
+
+        $response->getBody()->write(json_encode($stm));
+        return $response->withStatus(200);
+    }
+
     public function getOne(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $stm = $this->service->getOne($args['id']);
