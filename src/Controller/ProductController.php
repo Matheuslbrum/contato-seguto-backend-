@@ -38,6 +38,16 @@ class ProductController
         return $response->withStatus(200);
     }
 
+    public function getAllByCategoryFiltering(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        $adminUserId = $request->getHeader('admin_user_id')[0];
+        $category = $request->getQueryParams()['category'] ?? null;
+
+        $stm = $this->service->getAllByCategoryFiltering($adminUserId, $category);
+        $response->getBody()->write(json_encode($stm->fetchAll()));
+        return $response->withStatus(200);
+    }
+
     public function getOne(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $stm = $this->service->getOne($args['id']);
