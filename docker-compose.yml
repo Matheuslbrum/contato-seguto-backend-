@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  web:
+    image: urnau/app1-php:prod-nginx-php-fpm8.2.3
+    container_name: web
+    build:
+      context: .
+    ports:
+      - "8000:8000"
