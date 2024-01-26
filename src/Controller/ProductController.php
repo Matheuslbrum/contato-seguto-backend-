@@ -2,6 +2,8 @@
 
 namespace Contatoseguro\TesteBackend\Controller;
 
+require_once dirname(__DIR__, 1) . '../utils/filterFunction.php';
+
 use Contatoseguro\TesteBackend\Model\Product;
 use Contatoseguro\TesteBackend\Service\CategoryService;
 use Contatoseguro\TesteBackend\Service\ProductService;
@@ -22,44 +24,15 @@ class ProductController
     public function getAll(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $adminUserId = $request->getHeader('admin_user_id')[0];
-
-        $stm = $this->service->getAll($adminUserId);
-        $response->getBody()->write(json_encode($stm->fetchAll()));
-        return $response->withStatus(200);
-    }
-
-    public function getAllByStatusFiltering(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
-    {
-        $adminUserId = $request->getHeader('admin_user_id')[0];
         $status = $request->getQueryParams()['status'] ?? null;
-
-        $stm = $this->service->getAllByStatusFiltering($adminUserId, $status);
-        $response->getBody()->write(json_encode($stm->fetchAll()));
-        return $response->withStatus(200);
-    }
-
-    public function getAllByCategoryFiltering(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
-    {
-        $adminUserId = $request->getHeader('admin_user_id')[0];
         $category = $request->getQueryParams()['category'] ?? null;
+        $order = $request->getQueryParams()['order'] ?? null;
 
-        $stm = $this->service->getAllByCategoryFiltering($adminUserId, $category);
-        $response->getBody()->write(json_encode($stm->fetchAll()));
-        return $response->withStatus(200);
-    }
+        $stm = $this->service->getAll($adminUserId)->fetchAll();
 
-    public function getAllByOrder(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
-    {
-        $adminUserId = $request->getHeader('admin_user_id')[0];
-        $order = $request->getQueryParams()['order'] ?? 'asc';
-        $order = in_array(strtolower($order), ['asc', 'desc']) ? strtolower($order) : 'asc';
+        $filteredProduts = getFilteredProducts($stm, $order, $status, $category);
 
-        $stm = $this->service->getAllByOrder($adminUserId, $order)->fetchAll();
-
-        $newStm = array($stm);
-
-
-        $response->getBody()->write(json_encode($stm));
+        $response->getBody()->write(json_encode($filteredProduts));
         return $response->withStatus(200);
     }
 

@@ -29,61 +29,6 @@ class ProductService
         return $stm;
     }
 
-    public function getAllByOrder($adminUserId, $order)
-    {
-        $query = "
-            SELECT p.*, c.title as category
-            FROM product p
-            INNER JOIN product_category pc ON p.id = pc.product_id
-            INNER JOIN category c ON c.id = pc.cat_id
-            WHERE p.company_id = {$adminUserId}
-            ORDER BY p.created_at {$order}
-        ";
-
-        $stm = $this->pdo->prepare($query);
-
-        $stm->execute();
-
-        return $stm;
-    }
-
-    public function getAllByStatusFiltering($adminUserId, $status)
-    {
-        $query = "
-            SELECT p.*, c.title as category
-            FROM product p
-            INNER JOIN product_category pc ON p.id = pc.product_id
-            INNER JOIN category c ON c.id = pc.cat_id
-            WHERE p.company_id = {$adminUserId}
-            AND p.active = {$status}
-        ";
-
-        $stm = $this->pdo->prepare($query);
-
-        $stm->execute();
-
-        return $stm;
-    }
-
-    public function getAllByCategoryFiltering($adminUserId, $category)
-    {
-        $query = "
-            SELECT p.*, c.title as category
-            FROM product p
-            INNER JOIN product_category pc ON p.id = pc.product_id
-            INNER JOIN category c ON c.id = pc.cat_id
-            WHERE p.company_id = {$adminUserId}
-            AND c.title = '{$category}'
-        ";
-
-        $stm = $this->pdo->prepare($query);
-
-        $stm->execute();
-
-        return $stm;
-    }
-
-
     public function getOne($id)
     {
         $stm = $this->pdo->prepare("
