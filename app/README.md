@@ -83,7 +83,7 @@ Para a listagem de produtos:
 
 ### Extra
 
-- [ ] Aqui fica um desafio extra **opcional**: _criar um ambiente com_ Docker _para a api_.
+- [x] Aqui fica um desafio extra **opcional**: _criar um ambiente com_ Docker _para a api_.
 
 **Seu trabalho é atender às 7 demandas solicitadas pelo cliente.**
 
