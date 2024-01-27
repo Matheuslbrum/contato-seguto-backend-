@@ -45,7 +45,10 @@ class ReportController
             $stm = $this->productService->getLog($product->id);
             $productLogs = $stm->fetchAll();
 
-            $productLogsValue = implode('', array_map('getObjectValues', $productLogs));
+            $productLogsValue = implode('', array_map(function ($object) {
+                $newValues = "$object->admin_name, $object->action, $object->timestamp</br>";
+                return $newValues;
+            }, $productLogs));
 
             $data[$i + 1][] = $product->id;
             $data[$i + 1][] = $companyName;
