@@ -3,13 +3,16 @@
 namespace Contatoseguro\TesteBackend\Service;
 
 use Contatoseguro\TesteBackend\Config\DB;
+use Contatoseguro\TesteBackend\Service\CategoryService;
 
 class ProductService
 {
     private \PDO $pdo;
+    private CategoryService $service;
     public function __construct()
     {
         $this->pdo = DB::connect();
+        $this->service = new CategoryService();
     }
 
     public function getAll($adminUserId)
@@ -90,6 +93,33 @@ class ProductService
 
     public function updateOne($id, $body, $adminUserId)
     {
+        $oldProduct = $this->getOne($id)->fetch();
+        $oldCategory = $this->service->getProductCategory($id)->fetch();
+        $oldProductArray = get_object_vars($oldProduct);
+        $oldCategoryArray = get_object_vars($oldCategory);
+        unset($oldProductArray['id']);
+        unset($oldProductArray['created_at']);
+
+        $oldProductArray['category_id'] = $oldCategoryArray['id'];
+
+        $changes = [];
+
+        if ($oldProductArray['title'] != $body['title']) {
+            $changes['title'] = $body['title'];
+        }
+
+        if ($oldProductArray['price'] != $body['price']) {
+            $changes['price'] = $body['price'];
+        }
+
+        if ($oldProductArray['active'] != $body['active']) {
+            $changes['active'] = $body['active'];
+        }
+        if ($oldProductArray['category_id'] != $body['category_id']) {
+            $changes['category_id'] = $body['category_id'];
+        }
+
+
         $stm = $this->pdo->prepare("
             UPDATE product
             SET company_id = {$body['company_id']},
@@ -109,7 +139,9 @@ class ProductService
         if (!$stm->execute())
             return false;
 
-        $stm = $this->pdo->prepare("
+        foreach ($changes as $field => $value) {
+            var_dump($field);
+            $stm = $this->pdo->prepare("
             INSERT INTO product_log (
                 product_id,
                 admin_user_id,
@@ -117,11 +149,13 @@ class ProductService
             ) VALUES (
                 {$id},
                 {$adminUserId},
-                'update'
+                'update {$field}'
             )
         ");
+            $stm->execute();
+        }
 
-        return $stm->execute();
+        return $stm;
     }
 
     public function deleteOne($id, $adminUserId)
