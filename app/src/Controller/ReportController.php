@@ -2,8 +2,6 @@
 
 namespace Contatoseguro\TesteBackend\Controller;
 
-require_once dirname(__DIR__, 1) . '/utils/MapFunctions.php';
-
 use Contatoseguro\TesteBackend\Service\CompanyService;
 use Contatoseguro\TesteBackend\Service\ProductService;
 use Psr\Http\Message\ResponseInterface;
@@ -23,6 +21,10 @@ class ReportController
     public function generate(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $adminUserId = $request->getHeader('admin_user_id')[0];
+        $action = $request->getQueryParams()['action'] ?? null;
+        $productQs = $request->getQueryParams()['product'] ?? null;
+        $action = str_replace('+', ' ', $action);
+        $productQs = str_replace('+', ' ', $productQs);
 
         $data = [];
         $data[] = [
@@ -45,10 +47,29 @@ class ReportController
             $stm = $this->productService->getLog($product->id);
             $productLogs = $stm->fetchAll();
 
-            $productLogsValue = implode('', array_map(function ($object) {
-                $newValues = "$object->admin_name, $object->action, $object->timestamp</br>";
+            $productLogsArray = array_map(function ($object) {
+                $newValues = "$object->admin_name, $object->action, $object->timestamp";
                 return $newValues;
-            }, $productLogs));
+            }, $productLogs);
+
+            if ($action || $productQs) {
+                if ($product->title == $productQs) {
+                    $productLogsArray = array_filter($productLogsArray, function ($string) use ($action) {
+                        return strpos($string, $action) !== false;
+                    });
+
+                    usort($productLogsArray, function ($a, $b) {
+                        $dataA = strtotime(substr($a, strrpos($a, ',') + 2));
+                        $dataB = strtotime(substr($b, strrpos($b, ',') + 2));
+
+                        return $dataB - $dataA;
+                    });
+
+                    $productLogsArray = array_slice($productLogsArray, 0, 1);
+                }
+            }
+
+            $productLogsValue = implode('<br>', $productLogsArray);
 
             $data[$i + 1][] = $product->id;
             $data[$i + 1][] = $companyName;
