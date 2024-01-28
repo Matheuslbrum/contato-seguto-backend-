@@ -79,7 +79,7 @@ Para a listagem de produtos:
 
 ### Logs
 
-- [ ] Gostaria de saber qual usuário mudou o preço do produto `iphone 8` por último.
+- [x] Gostaria de saber qual usuário mudou o preço do produto `iphone 8` por último.
 
 ### Extra
 
@@ -95,4 +95,37 @@ Boa sorte! :)
 
 ## Suas Respostas, Duvidas e Observações
 
-[Adicione aqui suas respostas, dúvidas e observações]
+### Respostas
+
+#### Categorias
+
+- Correção na Listagem de Categorias:
+  Após analisar minuciosamente o código, identifiquei que o motivo para a categoria ser exibida incorretamente na listagem estava relacionado a um problema na query SQL do método getAll da Service. Realizei os ajustes necessários, garantindo que a rota retorne o resultado esperado.
+- Correção na Recuperação Individual de Categoria:
+  Seguindo a mesma linha de raciocínio do primeiro tópico, corrigi a query SQL do método getOne da Service, solucionando o problema na recuperação individual de categoria.
+- Busca Individual de Produto com Mais de Uma Categoria:
+  Este tópico apresentou desafios adicionais. Por um longo período, suspeitei que o problema estivesse na query, mas, na realidade, residia na lógica do controller getOne. Após uma análise detalhada, ajustei a lógica para retornar o resultado desejado. Optei por retornar dois objetos semelhantes, diferindo apenas na categoria, uma escolha que destaca melhor as duas categorias distintas.
+
+#### Filtros e Ordenamento
+
+-Refatoração para Query Strings:
+Inicialmente, considerei dividir o código em rotas e consultas SQL separadas para cada filtro e ordenador. Contudo, ao avançar para as próximas tarefas, percebi que não fazia sentido ter tantas rotas e consultas desnecessárias. Optei por utilizar query strings como input para filtrar e ordenar, permitindo a manipulação de diferentes itens simultaneamente. Criei uma função específica para aplicar todos os filtros, evitando um código muito extenso, e a aloquei em um arquivo separado dentro de uma nova pasta chamada "utils".
+Para utilizar a rota com query strings, será necessário acessar da seguinte maneira: http://localhost:8000/products?category=(categoria do produto)&order=(ordem de exibição, como crescente ou decrescente usando asc ou desc)&status=(status do produto, onde "active" trará todos os produtos ativos e diferente de "active" trará todos os inativos).
+
+#### Relatório
+
+- Atualização na Query de Logs e Tratamento no Controller:
+  Nesta tarefa, foi necessário ajustar a query de logs para incluir o nome do usuário responsável pela alteração. Após essa modificação, concentrei-me no controller de relatórios para processar os novos dados recebidos e exibir corretamente a coluna de logs.
+
+#### Extra
+
+- Implementação do Ambiente Docker:
+  Diante das dificuldades enfrentadas na tarefa dos logs, decidi avançar para a questão extra, que consistia em criar um ambiente Docker. Inicialmente, enfrentei desafios consideráveis, mas após extensa pesquisa, consegui estabelecer um ambiente totalmente funcional. Entretanto, migrei todo o projeto para uma pasta chamada "app", impactando a apresentação do repositório Git.
+
+#### Logs
+
+- Filtro dos Logs
+  Neste tópico, optei por verificar quais campos estavam sendo alterados ao atualizar um produto e assim enviar essa informação para a tabela de "product_logs". Dessa maneira, fui capaz de filtrar quem foi a última pessoa a alterar o preço (ou qualquer outro campo) de um produto. A forma de aplicar esse filtro foi por meio de query strings.
+  Para utilizar o filtro, é necessário acessar a URL da seguinte maneira:
+  http://localhost:8000/report?action=(ação para verificar a última alteração, por exemplo: update+price)&product=(produto para verificar a última alteração, por exemplo: iphone+8)
+  Os espaços entre os itens a serem filtrados devem ser representados pelo sinal de "+".
