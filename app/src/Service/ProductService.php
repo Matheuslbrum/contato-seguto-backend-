@@ -140,7 +140,6 @@ class ProductService
             return false;
 
         foreach ($changes as $field => $value) {
-            var_dump($field);
             $stm = $this->pdo->prepare("
             INSERT INTO product_log (
                 product_id,

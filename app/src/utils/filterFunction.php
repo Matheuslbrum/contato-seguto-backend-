@@ -25,8 +25,8 @@ function getFilteredProducts($stm, $order, $status, $category)
     }
 
     if ($status) {
-      $newStm = array_filter($newStm, function ($produto) use ($status) {
-        return $produto->active == ($status === "active" ? 1 : 0);
+      $newStm = array_filter($newStm, function ($product) use ($status) {
+        return $product->active == ($status === "active" ? 1 : 0);
       });
       $newStm = array_values($newStm);
     }
